@@ -1,0 +1,23 @@
+# Sem segredos aqui: tudo vem de variáveis de ambiente (veja .env.example).
+# - local:  autenticação via `gcloud auth application-default login`
+# - ci/prod: conta de serviço (caminho do JSON em DBT_KEYFILE)
+radar_credito_bcb:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT') }}"
+      dataset: "{{ env_var('DBT_DATASET', 'radar_dev') }}"
+      location: "{{ env_var('BQ_LOCATION', 'southamerica-east1') }}"
+      threads: 4
+      job_execution_timeout_seconds: 300
+    prod:
+      type: bigquery
+      method: service-account
+      keyfile: "{{ env_var('DBT_KEYFILE', '') }}"
+      project: "{{ env_var('GCP_PROJECT') }}"
+      dataset: "{{ env_var('DBT_DATASET', 'radar') }}"
+      location: "{{ env_var('BQ_LOCATION', 'southamerica-east1') }}"
+      threads: 4
+      job_execution_timeout_seconds: 300

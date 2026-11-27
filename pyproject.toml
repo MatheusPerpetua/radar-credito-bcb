@@ -1,0 +1,38 @@
+[project]
+name = "radar-credito-bcb"
+version = "0.1.0"
+description = "Pipeline de dados abertos do Banco Central: taxas de juros por banco e indicadores macro, com Prefect, BigQuery e dbt."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "prefect>=3.0,<4",
+    "requests>=2.31",
+    "pandas>=2.1",
+    "pyarrow>=14",
+    "google-cloud-bigquery>=3.17",
+    "db-dtypes>=1.2",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dbt = ["dbt-bigquery>=1.10,<2"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]

@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_bcb__taxas_juros
+    description: Taxas de juros com tipos e nomes padronizados. Segmento abreviado em PF/PJ.
+    columns:
+      - name: inicio_periodo
+        data_tests: [not_null]
+      - name: segmento
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+      - name: modalidade
+        data_tests: [not_null]
+      - name: cnpj8
+        description: Raiz do CNPJ (8 dígitos) — identifica a instituição.
+        data_tests: [not_null]
+      - name: taxa_juros_aa
+        description: Taxa média em % ao ano.
+        data_tests: [not_null]
+
+  - name: stg_bcb__sgs_series
+    description: Séries do SGS em formato longo, sem valores nulos.
+    columns:
+      - name: codigo_serie
+        data_tests: [not_null]
+      - name: data
+        data_tests: [not_null]

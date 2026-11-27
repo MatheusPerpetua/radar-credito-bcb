@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: dim_instituicao
+    description: Instituições financeiras (raiz do CNPJ) com o nome mais recente e histórico de publicação.
+    columns:
+      - name: cnpj8
+        data_tests: [unique, not_null]
+
+  - name: fct_taxas_juros
+    description: >
+      Taxa de juros por instituição, modalidade e período (janela móvel de 5 dias úteis),
+      com a meta Selic vigente, o spread sobre a Selic e a mediana da modalidade.
+    columns:
+      - name: id_taxa
+        data_tests: [unique, not_null]
+      - name: cnpj8
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_instituicao')
+                field: cnpj8
+      - name: selic_meta_aa
+        description: Meta Selic (% a.a.) vigente no início do período.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: spread_sobre_selic_pp
+        description: Taxa da instituição menos a meta Selic, em pontos percentuais.
+
+  - name: rpt_ranking_taxas_atual
+    description: Ranking das instituições por modalidade no período mais recente publicado.
+    columns:
+      - name: posicao_mais_barata
+        description: 1 = menor taxa da modalidade (empates recebem a mesma posição).
+        data_tests: [not_null]
+
+  - name: fct_indicadores_mensais
+    description: Selic, IPCA (mês e 12 meses), juro real ex-post e medianas de mercado PF/PJ.
+    columns:
+      - name: mes
+        data_tests: [unique, not_null]

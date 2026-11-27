@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: raw_bcb
+    description: Dados brutos carregados pelos flows Prefect (flows/pipeline.py).
+    database: "{{ env_var('GCP_PROJECT') }}"
+    schema: "{{ env_var('BQ_DATASET_RAW', 'raw_bcb') }}"
+    tables:
+      - name: taxas_juros
+        description: >
+          Taxa média de juros por instituição, modalidade e segmento, em janelas móveis de
+          5 dias úteis (API Olinda — TaxasJurosDiariaPorInicioPeriodo).
+        config:
+          loaded_at_field: ingested_at
+          freshness:
+            warn_after: { count: 3, period: day }
+            error_after: { count: 7, period: day }
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [inicio_periodo, segmento, modalidade, cnpj8]
+      - name: sgs_series
+        description: Séries temporais do SGS/BCB em formato longo (uma linha por série e data).
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [codigo_serie, data]
